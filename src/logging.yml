@@ -1,0 +1,73 @@
+---
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: "[%(levelname)1.2s][%(asctime)s] %(message)s"
+
+  console:
+    format: "[%(levelname)1.2s][%(asctime)s][%(name)s:%(lineno)s][%(connect_ip)s] %(message)s"
+
+  access:
+    (): "uvicorn.logging.AccessFormatter"
+    fmt: "[%(levelname)1.2s][%(asctime)s][%(connect_ip)s] - \"%(request_line)s\" %(status_code)s %(took)s"
+
+
+filters:
+
+  took:
+    (): 'utils.logger.TookFilter'
+    default_value: 0
+
+  connect_ip:
+    (): 'utils.logger.ConnectFilter'
+    default_value: 'no-ip'
+
+handlers:
+
+  simple:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple
+
+  console:
+    class: logging.StreamHandler
+    formatter: console
+    filters:
+      - connect_ip
+
+  access:
+    class: logging.StreamHandler
+    formatter: access
+    level: INFO
+    filters:
+      - took
+      - connect_ip
+
+loggers:
+
+  uvicorn.access:
+    level: INFO
+    handlers:
+      - access
+    propagate: False
+
+  uvicorn.error:
+    level: INFO
+    handlers:
+      - simple
+    propagate: False
+
+  alembic:
+    level: DEBUG
+
+  services:
+    level: INFO
+    handlers:
+      - console
+    propagate: False
+
+root:
+  level: INFO
+  handlers: [ console ]

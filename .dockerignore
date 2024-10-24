@@ -1,0 +1,8 @@
+ui/
+tests/
+.git/
+.idea/
+.venv/
+.run/
+.next/
+.node_modules/

@@ -1,0 +1,47 @@
+# fly.toml app configuration file generated for norns-white-cloud-9303 on 2024-04-10T11:32:39+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "news-ai"
+primary_region = "sin"
+
+[processes]
+  news-ai = "python main.py"
+
+[[services]]
+  internal_port = 8000
+  protocol = "tcp"
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["news-ai"]
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+  [[services.http_checks]]
+    interval = 30000  # 30s
+    grace_period = "5s"
+    method = "get"
+    path = "/health"
+    protocol = "http"
+    timeout = 2000 # 2s
+    tls_skip_verify = true
+    [services.http_checks.headers]
+
+[services.concurrency]
+  type = "connections"
+  soft_limit = 400
+  hard_limit = 500
+
+[deploy]
+  strategy = "bluegreen"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

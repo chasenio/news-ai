@@ -1,0 +1,21 @@
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"
+log_format = "%(asctime)s[%(name)-12s|%(lineno)-4s][%(levelname)1.4s] : %(message)s"
+log_date_format = "%Y-%M-%D %H:%M:%S"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::SyntaxWarning"
+]
+testpaths = [
+    "tests",
+]
+addopts = [
+    "--config=config.yml",
+]
+
+[tool.coverage.report]
+skip_empty = true  # excloud empty file
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
